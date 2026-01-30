@@ -1,0 +1,191 @@
+<mat-toolbar color="primary">
+  <button mat-stroked-button color="primary" class="back-button" (click)="goBack()">
+    Back
+  </button>
+  <span class="toolbar-title">Daily Log Detail</span>
+  <span class="toolbar-spacer"></span>
+  <button
+    mat-raised-button
+    color="primary"
+    class="export-button"
+    (click)="exportPdf()"
+    [disabled]="!log || isExporting"
+  >
+    <mat-icon>description</mat-icon>
+    Export PDF
+  </button>
+</mat-toolbar>
+
+<div class="page">
+  <div class="log-context" *ngIf="log">
+    <span class="context-pill">
+      <mat-icon>folder</mat-icon>
+      {{ project?.name || 'Project' }}
+    </span>
+    <span class="context-pill" *ngIf="log.folder">
+      <mat-icon>label</mat-icon>
+      {{ folderName || 'Folder' }}
+    </span>
+  </div>
+
+  <mat-card class="log-card" *ngIf="log">
+    <mat-card-title>{{ log.date | date }}</mat-card-title>
+    <mat-card-subtitle>{{ log.activityType }} · {{ log.siteArea }}</mat-card-subtitle>
+    <mat-card-content>
+      <div class="log-actions">
+        <button mat-stroked-button color="primary" (click)="toggleEdit()" *ngIf="!editMode">
+          Edit Log
+        </button>
+      </div>
+
+      <form *ngIf="editMode" [formGroup]="editForm" class="edit-form">
+        <div class="edit-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="editDate" formControlName="date" />
+            <mat-datepicker-toggle matSuffix [for]="editDate"></mat-datepicker-toggle>
+            <mat-datepicker #editDate></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Activity type</mat-label>
+            <input
+              matInput
+              formControlName="activityType"
+              [matAutocomplete]="editActivityAuto"
+              placeholder="Type or choose"
+            />
+            <mat-autocomplete #editActivityAuto="matAutocomplete">
+              <mat-option *ngFor="let option of activityOptions" [value]="option">
+                {{ option }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Site area</mat-label>
+            <input matInput formControlName="siteArea" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Folder</mat-label>
+            <mat-select formControlName="folder">
+              <mat-option value="">No folder</mat-option>
+              <mat-option *ngFor="let folder of folders" [value]="folder._id">
+                {{ folder.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Weather</mat-label>
+            <mat-select formControlName="weatherType">
+              <mat-option value="sunny">Sunny</mat-option>
+              <mat-option value="rainy">Rainy</mat-option>
+              <mat-option value="windy">Windy</mat-option>
+              <mat-option value="cloudy">Cloudy</mat-option>
+              <mat-option value="other">Other</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Weather notes</mat-label>
+            <input matInput formControlName="weatherNotes" />
+          </mat-form-field>
+        </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Summary</mat-label>
+          <textarea matInput rows="3" formControlName="summary"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Issues/Risks</mat-label>
+          <textarea matInput rows="2" formControlName="issuesRisks"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Next steps</mat-label>
+          <textarea matInput rows="2" formControlName="nextSteps"></textarea>
+        </mat-form-field>
+        <div class="edit-actions">
+          <button mat-stroked-button color="primary" type="button" (click)="cancelEdit()">Cancel</button>
+          <button mat-raised-button color="primary" type="button" (click)="saveEdit()" [disabled]="isSaving">
+            Save Changes
+          </button>
+        </div>
+      </form>
+
+      <div *ngIf="!editMode">
+      <p><strong>Summary:</strong> {{ log.summary }}</p>
+      <p *ngIf="log.issuesRisks"><strong>Issues/Risks:</strong> {{ log.issuesRisks }}</p>
+      <p *ngIf="log.nextSteps"><strong>Next Steps:</strong> {{ log.nextSteps }}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="section">
+    <mat-card-title>Attachments</mat-card-title>
+    <mat-card-content>
+      <div *ngIf="attachments.length === 0">No attachments yet.</div>
+      <div class="gallery">
+        <div *ngFor="let attachment of attachments" class="attachment-card">
+          <div class="preview" *ngIf="isImage(attachment); else filePreview">
+            <img [src]="attachmentUrl(attachment)" [alt]="attachment.caption || attachment.originalName || 'Attachment'" />
+          </div>
+          <ng-template #filePreview>
+            <div class="preview preview-file">
+              <mat-icon>insert_drive_file</mat-icon>
+              <span>File</span>
+            </div>
+          </ng-template>
+          <div class="attachment-head">
+            <a [href]="attachmentUrl(attachment)" target="_blank">
+              {{ attachment.caption || attachment.originalName || attachment.fileName }}
+            </a>
+            <button mat-icon-button color="warn" (click)="deleteAttachment(attachment)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+          <div class="comment-list" *ngIf="attachment.comments?.length">
+            <div *ngFor="let comment of attachment.comments" class="comment-item">
+              <strong>{{ comment.authorName || 'User' }}:</strong>
+              <span>{{ comment.text }}</span>
+            </div>
+          </div>
+          <div class="comment-input">
+            <input #commentInput type="text" placeholder="Add a comment..." />
+            <button mat-stroked-button color="primary" (click)="addComment(attachment, commentInput.value, commentInput)">
+              Post
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="section">
+    <mat-card-title>Upload Evidence</mat-card-title>
+    <mat-card-content>
+      <div class="upload" [formGroup]="uploadForm">
+        <div
+          class="drop-zone"
+          [class.is-dragover]="isDragOver"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+        >
+          <p>Drag & drop images or PDFs here</p>
+          <p class="muted">or click to browse</p>
+          <input type="file" multiple (change)="pickFiles($event)" />
+        </div>
+        <mat-form-field appearance="fill">
+          <mat-label>Caption</mat-label>
+          <input matInput formControlName="caption" />
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Tags (comma separated)</mat-label>
+          <input matInput formControlName="tags" />
+        </mat-form-field>
+        <div class="file-list" *ngIf="selectedFiles.length">
+          <strong>Selected:</strong>
+          <span>{{ selectedFiles.length }} file(s)</span>
+        </div>
+        <button mat-raised-button color="primary" (click)="upload()">Upload</button>
+        <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,49 @@
+
+.error {
+	color: #b91c1c;
+}
+
+.grid {
+	display: grid;
+	gap: 16px;
+}
+
+.full {
+	width: 100%;
+}
+
+.log-picker {
+	border: 1px solid rgba(15, 23, 42, 0.12);
+	border-radius: 12px;
+	padding: 12px;
+	background: #f8fafc;
+}
+
+.log-picker-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 8px;
+	font-weight: 600;
+}
+
+.log-picker-actions {
+	display: flex;
+	gap: 8px;
+}
+
+.back-button {
+	font-weight: 700;
+	letter-spacing: 0.3px;
+	background: #1b5e20 !important;
+	border-color: #1b5e20 !important;
+	color: #ffffff !important;
+}
+
+.toolbar-title {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	font-weight: 700;
+}

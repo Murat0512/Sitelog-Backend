@@ -1,0 +1,282 @@
+<div class="header">
+  <div>
+    <h1 class="page-title">Daily Logs</h1>
+    <p class="page-subtitle">
+      Create logs, attach evidence, and export reports.
+    </p>
+  </div>
+  <div class="header-actions">
+    <button mat-stroked-button color="primary" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Back to Projects
+    </button>
+    <a mat-raised-button color="primary" [routerLink]="['/projects', project?._id, 'reports']">
+      <mat-icon>description</mat-icon>
+      Export PDF
+    </a>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="folder-rail">
+    <mat-card class="card">
+      <mat-card-title>
+        <span class="folder-rail-title">
+          <mat-icon>folder</mat-icon>
+          {{ project?.name || 'Project' }}
+        </span>
+      </mat-card-title>
+      <mat-card-content>
+        <mat-expansion-panel class="folder-panel" [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Folders</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div *ngIf="!folders.length" class="empty">
+            <mat-icon>folder_open</mat-icon>
+            <p>No folders yet.</p>
+          </div>
+          <div class="folder-rail-list" *ngIf="folders.length">
+            <div class="folder-row" *ngFor="let folder of folders">
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="selectFolder(folder._id)"
+                [class.is-active]="logForm.value.folder === folder._id"
+                class="folder-btn"
+                [matTooltip]="folder.name"
+              >
+                {{ folder.name }}
+              </button>
+              <button mat-icon-button color="warn" class="folder-delete" (click)="deleteFolder(folder, $event)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="panel">
+    <mat-card class="card">
+      <mat-card-content>
+        <form [formGroup]="folderForm" (ngSubmit)="createFolder()" class="form folder-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Folder name</mat-label>
+            <input matInput formControlName="name" />
+          </mat-form-field>
+          <button mat-stroked-button color="primary" type="submit">Create Folder</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="card">
+      <mat-card-title>Create Daily Log</mat-card-title>
+      <mat-card-content>
+        <div class="folder-subtitle">
+          Folder: <span class="folder-name">{{ selectedFolderName() }}</span>
+        </div>
+        <div class="hint">
+          Tip: Create a daily log first, then attach evidence inside the log card.
+        </div>
+        <form [formGroup]="logForm" (ngSubmit)="createLog()" class="form">
+          <mat-form-field appearance="outline">
+            <mat-label>Date</mat-label>
+            <input matInput [matDatepicker]="logDate" formControlName="date" />
+            <mat-datepicker-toggle matSuffix [for]="logDate"></mat-datepicker-toggle>
+            <mat-datepicker #logDate></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Weather</mat-label>
+            <mat-select formControlName="weatherType">
+              <mat-option value="sunny">Sunny</mat-option>
+              <mat-option value="rainy">Rainy</mat-option>
+              <mat-option value="windy">Windy</mat-option>
+              <mat-option value="cloudy">Cloudy</mat-option>
+              <mat-option value="other">Other</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Weather notes</mat-label>
+            <input matInput formControlName="weatherNotes" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Site area</mat-label>
+            <input matInput formControlName="siteArea" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Activity type</mat-label>
+            <input
+              matInput
+              formControlName="activityType"
+              [matAutocomplete]="activityAuto"
+              placeholder="Type or choose"
+            />
+            <mat-autocomplete #activityAuto="matAutocomplete">
+              <mat-option *ngFor="let option of activityOptions" [value]="option">
+                {{ option }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Folder (optional)</mat-label>
+            <mat-select formControlName="folder">
+              <mat-option value="">No folder</mat-option>
+              <mat-option *ngFor="let folder of folders" [value]="folder._id">
+                {{ folder.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Summary</mat-label>
+            <textarea matInput rows="3" formControlName="summary"></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Issues / risks</mat-label>
+            <textarea matInput rows="2" formControlName="issuesRisks"></textarea>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Next steps</mat-label>
+            <textarea matInput rows="2" formControlName="nextSteps"></textarea>
+          </mat-form-field>
+          <button mat-raised-button color="primary" type="submit">Add Log</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="content">
+    <div class="section-title">Log Entries</div>
+    <div class="success" *ngIf="successMessage">{{ successMessage }}</div>
+    <div *ngIf="isLoading">Loading logs...</div>
+    <div *ngIf="!isLoading && logs.length === 0" class="empty">
+      <mat-icon>inventory_2</mat-icon>
+      <p>No logs yet. Create your first daily log.</p>
+    </div>
+
+    <mat-card *ngFor="let log of logs" class="card log" [class.highlight]="log._id === highlightLogId">
+      <div class="log-head">
+        <div>
+          <div class="log-date">{{ log.date | date: 'mediumDate' }}</div>
+          <div class="log-meta">
+            <mat-chip-set>
+              <mat-chip>{{ log.activityType }}</mat-chip>
+              <mat-chip *ngIf="log.weather?.type">{{ log.weather?.type }}</mat-chip>
+            </mat-chip-set>
+          </div>
+        </div>
+
+        <button mat-stroked-button color="primary" [routerLink]="['/logs', log._id]">
+          View details
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteLog(log)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="log-body">
+        <div class="log-row"><mat-icon>place</mat-icon><b>Area</b><span>{{ log.siteArea }}</span></div>
+        <div class="log-row"><mat-icon>notes</mat-icon><b>Summary</b><span>{{ log.summary }}</span></div>
+        <div class="log-row" *ngIf="log.issuesRisks"><mat-icon>report</mat-icon><b>Issues/Risks</b><span>{{ log.issuesRisks }}</span></div>
+        <div class="log-row" *ngIf="log.nextSteps"><mat-icon>checklist</mat-icon><b>Next steps</b><span>{{ log.nextSteps }}</span></div>
+      </div>
+
+      <div class="log-foot">
+        <mat-icon>attach_file</mat-icon>
+        <span>{{ attachmentCount(log._id) }} attachments</span>
+      </div>
+
+      <details class="evidence">
+        <summary>Evidence & Upload</summary>
+        <div class="attachments" *ngIf="attachmentsFor(log._id).length">
+          <strong>Attachments:</strong>
+          <ul>
+            <li *ngFor="let attachment of attachmentsFor(log._id)">
+              {{ attachment.caption || attachment.originalName }}
+            </li>
+          </ul>
+        </div>
+
+        <div class="upload" [formGroup]="uploadForm">
+          <div
+            class="drop-zone"
+            [class.is-dragover]="isDragOver"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+                (drop)="onDrop($event, log)"
+          >
+            <p>Drag & drop images or PDFs here</p>
+            <p class="muted">or click to browse</p>
+                <input type="file" multiple (change)="pickFiles($event, log)" />
+          </div>
+              <div class="auto-note">Files upload automatically after selection.</div>
+          <div class="two">
+            <mat-form-field appearance="outline">
+              <mat-label>Caption</mat-label>
+              <input matInput formControlName="caption" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Tags (comma separated)</mat-label>
+              <input matInput formControlName="tags" />
+            </mat-form-field>
+          </div>
+          <div class="file-list" *ngIf="selectedFiles.length">
+            <strong>Selected:</strong>
+            <span>{{ selectedFiles.length }} file(s)</span>
+          </div>
+        </div>
+      </details>
+    </mat-card>
+  </div>
+
+  <div class="panel filters">
+    <mat-card class="card">
+      <mat-card-title>Filter Logs</mat-card-title>
+      <mat-card-content>
+        <form [formGroup]="filterForm" class="form">
+          <mat-form-field appearance="outline">
+            <mat-label>Start date</mat-label>
+            <input matInput [matDatepicker]="filterStart" formControlName="startDate" />
+            <mat-datepicker-toggle matSuffix [for]="filterStart"></mat-datepicker-toggle>
+            <mat-datepicker #filterStart></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>End date</mat-label>
+            <input matInput [matDatepicker]="filterEnd" formControlName="endDate" />
+            <mat-datepicker-toggle matSuffix [for]="filterEnd"></mat-datepicker-toggle>
+            <mat-datepicker #filterEnd></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Activity</mat-label>
+            <mat-select formControlName="activityType">
+              <mat-option value="">All</mat-option>
+              <mat-option value="excavation">Excavation</mat-option>
+              <mat-option value="rebar">Rebar</mat-option>
+              <mat-option value="concrete_pour">Concrete Pour</mat-option>
+              <mat-option value="drainage">Drainage</mat-option>
+              <mat-option value="masonry">Masonry</mat-option>
+              <mat-option value="inspection">Inspection</mat-option>
+              <mat-option value="delivery">Delivery</mat-option>
+              <mat-option value="other">Other</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Folder</mat-label>
+            <mat-select formControlName="folder">
+              <mat-option value="">All</mat-option>
+              <mat-option *ngFor="let folder of folders" [value]="folder._id">
+                {{ folder.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button mat-raised-button color="primary" type="button" (click)="applyFilters()">
+            Apply Filters
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

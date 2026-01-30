@@ -1,0 +1,99 @@
+<div class="header">
+  <div>
+    <h1 class="page-title">Projects</h1>
+    <p class="page-subtitle">Create and manage active projects.</p>
+  </div>
+
+  <button mat-raised-button color="primary" (click)="focusCreate()">
+    <mat-icon>add</mat-icon>
+    New Project
+  </button>
+</div>
+
+<div class="grid">
+  <mat-card class="card" id="create-project-card">
+    <mat-card-title>Create Project</mat-card-title>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="createProject()" class="form">
+        <mat-form-field appearance="outline">
+          <mat-label>Project name</mat-label>
+          <input matInput formControlName="name" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Client</mat-label>
+          <input matInput formControlName="client" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Site address</mat-label>
+          <input matInput formControlName="siteAddress" />
+        </mat-form-field>
+
+        <div class="two">
+          <mat-form-field appearance="outline">
+            <mat-label>Start date</mat-label>
+            <input matInput [matDatepicker]="dp1" formControlName="startDate" />
+            <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+            <mat-datepicker #dp1></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>End date</mat-label>
+            <input matInput [matDatepicker]="dp2" formControlName="endDate" />
+            <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+            <mat-datepicker #dp2></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="active">Active</mat-option>
+            <mat-option value="on-hold">On Hold</mat-option>
+            <mat-option value="completed">Completed</mat-option>
+            <mat-option value="archived">Archived</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" [disabled]="form.invalid || isLoading" class="full">
+          <mat-icon>check</mat-icon>
+          Create Project
+        </button>
+        <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="card">
+    <mat-card-title>Active Projects</mat-card-title>
+    <mat-card-content>
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Search projects</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [(ngModel)]="query" placeholder="Type a name or client..." />
+      </mat-form-field>
+
+      <div *ngIf="isLoading">Loading projects...</div>
+
+      <mat-list class="project-list" *ngIf="!isLoading">
+        <mat-list-item *ngFor="let project of filteredProjects()" class="project-item">
+          <mat-icon matListItemIcon>folder</mat-icon>
+          <div matListItemTitle>{{ project.name }}</div>
+          <div matListItemLine>{{ project.client }} • {{ project.siteAddress }}</div>
+          <button mat-stroked-button color="primary" class="arrow-btn" (click)="openProject(project)">
+            Open
+          </button>
+          <button mat-icon-button color="warn" class="delete-btn" (click)="deleteProject(project)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-list>
+
+      <div *ngIf="!isLoading && !projects?.length" class="empty">
+        <mat-icon>inventory_2</mat-icon>
+        <p>No projects yet. Create your first project.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

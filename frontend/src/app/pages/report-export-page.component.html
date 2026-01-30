@@ -1,0 +1,49 @@
+<mat-toolbar color="primary">
+  <button mat-stroked-button color="primary" class="back-button" (click)="goBack()">Back</button>
+  <span class="toolbar-title">Report Export</span>
+</mat-toolbar>
+
+<div class="page">
+  <mat-card>
+    <mat-card-title>Generate PDF Report</mat-card-title>
+    <mat-card-content>
+      <form [formGroup]="form" class="grid">
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Folder (optional)</mat-label>
+          <mat-select formControlName="folder" (selectionChange)="loadLogs()">
+            <mat-option value="">All folders</mat-option>
+            <mat-option *ngFor="let folder of folders" [value]="folder._id">
+              {{ folder.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="log-picker">
+          <div class="log-picker-header">
+            <span>Select logs to include</span>
+            <div class="log-picker-actions">
+              <button mat-stroked-button type="button" (click)="selectAll()">Select all</button>
+              <button mat-stroked-button type="button" (click)="clearSelection()">Clear</button>
+            </div>
+          </div>
+
+          <mat-list>
+            <mat-list-item *ngFor="let log of logs">
+              <mat-checkbox
+                [checked]="selectedLogIds.has(log._id)"
+                (change)="toggleLog(log._id, $event.checked)"
+              >
+                {{ log.date | date }} • {{ log.activityType }} • {{ log.siteArea }}
+              </mat-checkbox>
+            </mat-list-item>
+          </mat-list>
+        </div>
+
+        <button mat-raised-button color="primary" type="button" (click)="download()" [disabled]="isDownloading">
+          {{ isDownloading ? 'Generating…' : 'Generate PDF' }}
+        </button>
+        <div class="error" *ngIf="error">{{ error }}</div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

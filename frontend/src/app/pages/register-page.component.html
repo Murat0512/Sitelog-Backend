@@ -1,0 +1,39 @@
+<div class="auth-shell">
+  <div class="auth-card">
+    <div class="brand">
+      <div class="logo">ST</div>
+      <div>
+        <h1>SiteTracker</h1>
+        <p>Capture site progress with structured evidence.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
+      <label>
+        <span>Name</span>
+        <input type="text" formControlName="name" placeholder="Your full name" />
+      </label>
+
+      <label>
+        <span>Email</span>
+        <input type="email" formControlName="email" placeholder="name@company.com" />
+      </label>
+
+      <label>
+        <span>Password</span>
+        <input type="password" formControlName="password" placeholder="••••••••" />
+      </label>
+
+      <button class="primary" type="submit" [disabled]="form.invalid || loading">
+        {{ loading ? 'Creating account…' : 'Create account' }}
+      </button>
+
+      <div class="sub">
+        Already have an account?
+        <a routerLink="/login">Sign in</a>
+      </div>
+
+      <p class="error" *ngIf="error">{{ error }}</p>
+    </form>
+  </div>
+</div>

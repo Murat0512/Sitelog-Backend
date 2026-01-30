@@ -1,0 +1,123 @@
+
+.shell {
+	height: 100vh;
+}
+
+.sidenav {
+	width: 260px;
+	border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.side-header {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	padding: 16px;
+}
+
+.logo {
+	width: 42px;
+	height: 42px;
+	border-radius: 12px;
+	display: grid;
+	place-items: center;
+	font-weight: 800;
+	background: rgba(255, 255, 255, 0.16);
+}
+
+.brand {
+	font-weight: 700;
+}
+
+.tagline {
+	font-size: 12px;
+	opacity: 0.75;
+}
+
+.topbar {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+
+.title {
+	font-weight: 700;
+}
+
+.spacer {
+	flex: 1;
+}
+
+.content {
+	padding: 24px;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.content.content-wide {
+	max-width: 1400px;
+	width: 100%;
+	margin-left: 0;
+	margin-right: auto;
+}
+
+.active {
+	background: rgba(0, 0, 0, 0.06);
+	border-radius: 10px;
+}
+
+.sidenav mat-icon {
+	color: #2e7d32;
+}
+
+.hide-desktop {
+	display: none;
+}
+
+.hide-mobile {
+	display: inline;
+}
+
+.account-summary {
+	padding: 12px 16px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.account-name {
+	font-weight: 700;
+}
+
+.account-email {
+	font-size: 12px;
+	opacity: 0.7;
+}
+
+.logout-button {
+	color: #ffffff !important;
+	border-color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.logout-button mat-icon {
+	color: #ffffff !important;
+}
+
+@media (max-width: 900px) {
+	.sidenav {
+		width: 240px;
+	}
+}
+
+@media (max-width: 760px) {
+	.hide-desktop {
+		display: inline-flex;
+	}
+
+	.hide-mobile {
+		display: none;
+	}
+
+	.content {
+		padding: 16px;
+		max-width: 100%;
+	}
+}

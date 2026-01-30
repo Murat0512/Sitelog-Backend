@@ -1,0 +1,59 @@
+<div class="header">
+  <div>
+    <h1 class="page-title">Profile</h1>
+    <p class="page-subtitle">Manage your account details.</p>
+  </div>
+  <button mat-stroked-button color="primary" (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+    Back to Projects
+  </button>
+</div>
+
+<div class="grid">
+  <mat-card class="card">
+    <mat-card-title>Account</mat-card-title>
+    <mat-card-content>
+      <div *ngIf="isLoading">Loading profile...</div>
+      <div class="info" *ngIf="user">
+        <mat-form-field appearance="outline">
+          <mat-label>Full name</mat-label>
+          <input matInput [value]="user.name || 'User'" readonly />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput [value]="user.email" readonly />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Role</mat-label>
+          <input matInput [value]="user.role" readonly />
+        </mat-form-field>
+      </div>
+      <div class="error" *ngIf="error">{{ error }}</div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="card">
+    <mat-card-title>Change password</mat-card-title>
+    <mat-card-content>
+      <form [formGroup]="passwordForm" (ngSubmit)="savePassword()" class="form">
+        <mat-form-field appearance="outline">
+          <mat-label>Current password</mat-label>
+          <input matInput type="password" formControlName="currentPassword" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>New password</mat-label>
+          <input matInput type="password" formControlName="newPassword" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Confirm new password</mat-label>
+          <input matInput type="password" formControlName="confirmPassword" />
+        </mat-form-field>
+        <button mat-raised-button color="primary" [disabled]="isLoading">
+          Update password
+        </button>
+        <div class="success" *ngIf="message">{{ message }}</div>
+        <div class="error" *ngIf="error">{{ error }}</div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

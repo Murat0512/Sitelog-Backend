@@ -1,0 +1,68 @@
+<ng-container *ngIf="isAuthRoute; else appShell">
+	<router-outlet></router-outlet>
+</ng-container>
+
+<ng-template #appShell>
+	<mat-sidenav-container class="shell">
+		<mat-sidenav #drawer mode="side" [opened]="true" class="sidenav">
+			<div class="side-header">
+				<div class="logo">ST</div>
+				<div>
+					<div class="brand">SiteTracker</div>
+					<div class="tagline">Structured site evidence</div>
+				</div>
+			</div>
+
+			<mat-nav-list>
+				<a mat-list-item routerLink="/projects" routerLinkActive="active">
+					<mat-icon matListItemIcon>folder</mat-icon>
+					<span matListItemTitle>Projects</span>
+				</a>
+				<a mat-list-item routerLink="/reports" routerLinkActive="active">
+					<mat-icon matListItemIcon>description</mat-icon>
+					<span matListItemTitle>Reports</span>
+				</a>
+			</mat-nav-list>
+		</mat-sidenav>
+
+		<mat-sidenav-content>
+			<mat-toolbar color="primary" class="topbar">
+				<button mat-icon-button (click)="drawer.toggle()" class="hide-desktop">
+					<mat-icon>menu</mat-icon>
+				</button>
+
+				<span class="title">SiteTracker</span>
+				<span class="spacer"></span>
+
+				<button mat-button [matMenuTriggerFor]="accountMenu" *ngIf="user">
+					<mat-icon>account_circle</mat-icon>
+					<span class="hide-mobile">Account</span>
+				</button>
+
+				<button mat-stroked-button color="accent" class="logout-button" (click)="logout()">
+					<mat-icon>logout</mat-icon>
+					Logout
+				</button>
+			</mat-toolbar>
+
+			<mat-menu #accountMenu="matMenu">
+				<div class="account-summary" *ngIf="user">
+					<div class="account-name">{{ user.name || 'User' }}</div>
+					<div class="account-email">{{ user.email }}</div>
+				</div>
+				<button mat-menu-item routerLink="/profile">
+					<mat-icon>person</mat-icon>
+					Profile
+				</button>
+				<button mat-menu-item (click)="logout()">
+					<mat-icon>logout</mat-icon>
+					Logout
+				</button>
+			</mat-menu>
+
+			<main class="content" [class.content-wide]="isWideRoute">
+				<router-outlet></router-outlet>
+			</main>
+		</mat-sidenav-content>
+	</mat-sidenav-container>
+</ng-template>
