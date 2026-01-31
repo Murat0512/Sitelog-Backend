@@ -216,6 +216,7 @@ router.post(
 
       return res.json({ message: 'If an account exists, a reset token has been generated.' });
     } catch (error) {
+      console.error('Password reset email failed:', error?.message || error);
       return res.status(500).json({ message: 'Unable to start password reset.' });
     }
   }
