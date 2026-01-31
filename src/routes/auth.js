@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
@@ -156,6 +157,94 @@ router.post(
   } catch (error) {
     return res.status(500).json({ message: 'Unable to change password.' });
   }
+  }
+);
+
+router.post(
+  '/forgot-password',
+  [body('email').isEmail().withMessage('Valid email is required.')],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ message: errors.array()[0].msg });
+      }
+
+      const { email } = req.body;
+      const user = await User.findOne({ email: email.toLowerCase() });
+
+      if (user) {
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+        user.resetPasswordTokenHash = resetTokenHash;
+        user.resetPasswordExpires = new Date(Date.now() + 60 * 60 * 1000);
+        await user.save();
+
+        await logEvent({
+          action: 'user.password_reset_requested',
+          user: { sub: user._id, email: user.email },
+          ip: req.ip
+        });
+
+        const allowTokenResponse = process.env.RESET_PASSWORD_TOKEN_RESPONSE === 'true';
+        if (allowTokenResponse) {
+          return res.json({
+            message: 'If an account exists, a reset token has been generated.',
+            resetToken
+          });
+        }
+      }
+
+      return res.json({ message: 'If an account exists, a reset token has been generated.' });
+    } catch (error) {
+      return res.status(500).json({ message: 'Unable to start password reset.' });
+    }
+  }
+);
+
+router.post(
+  '/reset-password',
+  [
+    body('token').notEmpty().withMessage('Reset token is required.'),
+    body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters.')
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ message: errors.array()[0].msg });
+      }
+
+      const { token, newPassword } = req.body;
+      const resetTokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+      const user = await User.findOne({
+        resetPasswordTokenHash: resetTokenHash,
+        resetPasswordExpires: { $gt: new Date() }
+      });
+
+      if (!user) {
+        return res.status(400).json({ message: 'Reset token is invalid or expired.' });
+      }
+
+      user.passwordHash = await bcrypt.hash(newPassword, 10);
+      user.resetPasswordTokenHash = undefined;
+      user.resetPasswordExpires = undefined;
+      user.failedLoginAttempts = 0;
+      user.lockUntil = null;
+      await user.save();
+
+      await logEvent({
+        action: 'user.password_reset_completed',
+        user: { sub: user._id, email: user.email },
+        ip: req.ip
+      });
+
+      return res.json({ message: 'Password updated successfully.' });
+    } catch (error) {
+      return res.status(500).json({ message: 'Unable to reset password.' });
+    }
   }
 );
 
