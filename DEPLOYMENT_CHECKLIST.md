@@ -19,7 +19,9 @@
   - `CLOUDINARY_API_KEY`
   - `CLOUDINARY_API_SECRET`
   - Optional: `CORS_ORIGIN`
-  - Optional: `RESET_PASSWORD_TOKEN_RESPONSE` (set to `true` to return reset tokens)
+  - `SENDGRID_API_KEY`
+  - `SENDGRID_FROM`
+  - `FRONTEND_URL`
 - [ ] Deploy
 - [ ] Test:
   - `GET /api/health`
@@ -41,3 +43,4 @@
 - [ ] No local disk uploads
 - [ ] JWT protects routes
 - [ ] PDF export works and is fast
+- [ ] Password reset emails send successfully

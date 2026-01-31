@@ -34,6 +34,8 @@ A simple civil engineering site progress tracker with daily logs, evidence uploa
 
 The API runs on `http://localhost:3000` by default.
 
+For production, set `FRONTEND_URL` or `CORS_ORIGIN` to the deployed frontend URL to enable strict CORS.
+
 ## Frontend Setup
 1. Install dependencies (already done if using this workspace):
    - `npm install`
@@ -73,7 +75,9 @@ The app runs on `http://localhost:4200` and calls the API at `/api`.
    - `CLOUDINARY_API_KEY`
    - `CLOUDINARY_API_SECRET`
    - Optional: `CORS_ORIGIN`
-   - Optional: `RESET_PASSWORD_TOKEN_RESPONSE` (set to `true` to return reset tokens)
+   - `SENDGRID_API_KEY`
+   - `SENDGRID_FROM`
+   - `FRONTEND_URL`
 3. Deploy and verify:
    - `GET /api/health`
    - `POST /api/auth/login`

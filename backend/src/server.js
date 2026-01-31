@@ -13,7 +13,7 @@ const auth = require('./middleware/auth');
 
 const app = express();
 
-const corsOrigin = process.env.CORS_ORIGIN || '*';
+const corsOrigin = process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:4200';
 app.use(cors({ origin: corsOrigin }));
 app.use(
   helmet({
@@ -23,7 +23,7 @@ app.use(
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 10,
   message: 'Too many attempts. Please try again later.'
 });
 app.use(express.json());
