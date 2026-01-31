@@ -29,14 +29,14 @@ const authLimiter = rateLimit({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/projects', auth, projectRoutes);
 app.use('/api', auth, logRoutes);
 app.use('/api', auth, folderRoutes);
-
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
 
 const port = process.env.PORT || 3000;
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/site-tracker';
