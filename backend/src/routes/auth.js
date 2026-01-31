@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const sendgrid = require('@sendgrid/mail');
+const { Resend } = require('resend');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
@@ -11,30 +11,26 @@ const { logEvent } = require('../utils/audit');
 const router = express.Router();
 
 const sendResetEmail = async ({ to, token }) => {
-  const apiKey = process.env.SENDGRID_API_KEY;
-  const from = process.env.SENDGRID_FROM;
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM || process.env.MAIL_FROM;
   const frontendUrl = process.env.FRONTEND_URL || process.env.CORS_ORIGIN || '';
 
   if (!apiKey || !from) {
-    throw new Error('SendGrid configuration missing.');
+    throw new Error('Resend configuration missing.');
   }
 
-  sendgrid.setApiKey(apiKey);
+  const resend = new Resend(apiKey);
 
   const resetUrl = frontendUrl ? `${frontendUrl.replace(/\/$/, '')}/reset-password/${token}` : '';
-  const message = {
-    to,
-    from,
-    subject: 'Reset your SiteTracker password',
-    text: resetUrl
-      ? `Reset your password using this link: ${resetUrl}`
-      : `Use this reset token to update your password: ${token}`,
-    html: resetUrl
-      ? `<p>Reset your password using this link:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
-      : `<p>Use this reset token to update your password:</p><p><strong>${token}</strong></p>`
-  };
+  const subject = 'Reset your SiteTracker password';
+  const text = resetUrl
+    ? `Reset your password using this link: ${resetUrl}`
+    : `Use this reset token to update your password: ${token}`;
+  const html = resetUrl
+    ? `<p>Reset your password using this link:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
+    : `<p>Use this reset token to update your password:</p><p><strong>${token}</strong></p>`;
 
-  await sendgrid.send(message);
+  await resend.emails.send({ to, from, subject, text, html });
 };
 
 router.post(

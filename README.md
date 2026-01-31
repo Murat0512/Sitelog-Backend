@@ -75,8 +75,8 @@ The app runs on `http://localhost:4200` and calls the API at `/api`.
    - `CLOUDINARY_API_KEY`
    - `CLOUDINARY_API_SECRET`
    - Optional: `CORS_ORIGIN`
-   - `SENDGRID_API_KEY`
-   - `SENDGRID_FROM`
+   - `RESEND_API_KEY`
+   - `RESEND_FROM` (or `MAIL_FROM`)
    - `FRONTEND_URL`
 3. Deploy and verify:
    - `GET /api/health`
