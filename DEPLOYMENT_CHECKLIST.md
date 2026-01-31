@@ -19,6 +19,7 @@
   - `CLOUDINARY_API_KEY`
   - `CLOUDINARY_API_SECRET`
   - Optional: `CORS_ORIGIN`
+  - Optional: `RESET_PASSWORD_TOKEN_RESPONSE` (set to `true` to return reset tokens)
 - [ ] Deploy
 - [ ] Test:
   - `GET /api/health`

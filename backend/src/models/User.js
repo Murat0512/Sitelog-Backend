@@ -7,7 +7,9 @@ const userSchema = new mongoose.Schema(
     passwordHash: { type: String, required: true },
     role: { type: String, enum: ['admin', 'member'], default: 'member' },
     failedLoginAttempts: { type: Number, default: 0 },
-    lockUntil: { type: Date }
+    lockUntil: { type: Date },
+    resetPasswordTokenHash: { type: String },
+    resetPasswordExpires: { type: Date }
   },
   { timestamps: true }
 );

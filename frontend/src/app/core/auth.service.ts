@@ -60,6 +60,20 @@ export class AuthService {
     });
   }
 
+  requestPasswordReset(email: string) {
+    return this.http.post<{ message: string; resetToken?: string }>(
+      `${API_BASE_URL}/auth/forgot-password`,
+      { email }
+    );
+  }
+
+  resetPassword(token: string, newPassword: string) {
+    return this.http.post<{ message: string }>(`${API_BASE_URL}/auth/reset-password`, {
+      token,
+      newPassword
+    });
+  }
+
   get isAuthenticated(): boolean {
     return Boolean(localStorage.getItem(this.tokenKey));
   }

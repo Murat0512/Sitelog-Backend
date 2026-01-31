@@ -45,6 +45,8 @@ The app runs on `http://localhost:4200` and calls the API at `/api`.
 ## API Endpoints (MVP)
 - `POST /api/auth/register`
 - `POST /api/auth/login`
+- `POST /api/auth/forgot-password`
+- `POST /api/auth/reset-password`
 - `GET /api/auth/me`
 - `GET /api/projects`
 - `POST /api/projects`
@@ -71,6 +73,7 @@ The app runs on `http://localhost:4200` and calls the API at `/api`.
    - `CLOUDINARY_API_KEY`
    - `CLOUDINARY_API_SECRET`
    - Optional: `CORS_ORIGIN`
+   - Optional: `RESET_PASSWORD_TOKEN_RESPONSE` (set to `true` to return reset tokens)
 3. Deploy and verify:
    - `GET /api/health`
    - `POST /api/auth/login`

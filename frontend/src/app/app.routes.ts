@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { LoginPageComponent } from './pages/login-page.component';
 import { RegisterPageComponent } from './pages/register-page.component';
+import { ForgotPasswordPageComponent } from './pages/forgot-password-page.component';
+import { ResetPasswordPageComponent } from './pages/reset-password-page.component';
 import { ProjectsPageComponent } from './pages/projects-page.component';
 import { ProjectDetailPageComponent } from './pages/project-detail-page.component';
 import { DailyLogDetailPageComponent } from './pages/daily-log-detail-page.component';
@@ -12,6 +14,9 @@ export const routes: Routes = [
 	{ path: '', redirectTo: 'projects', pathMatch: 'full' },
 	{ path: 'login', component: LoginPageComponent },
 	{ path: 'register', component: RegisterPageComponent },
+	{ path: 'forgot-password', component: ForgotPasswordPageComponent },
+	{ path: 'reset-password', component: ResetPasswordPageComponent },
+	{ path: 'reset-password/:token', component: ResetPasswordPageComponent },
 	{ path: 'projects', component: ProjectsPageComponent, canActivate: [authGuard] },
 	{ path: 'projects/:id', component: ProjectDetailPageComponent, canActivate: [authGuard] },
 	{ path: 'projects/:id/reports', component: ReportExportPageComponent, canActivate: [authGuard] },
