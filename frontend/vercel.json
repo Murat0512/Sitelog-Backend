@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://sitelog-backend-e39uz2y8w-murat-karabiyiks-projects.vercel.app/api/$1"
+      "destination": "https://sitelog-backend.vercel.app/api/$1"
     },
     { "source": "/(.*)", "destination": "/" }
   ]
