@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const sendgrid = require('@sendgrid/mail');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
@@ -8,6 +9,33 @@ const auth = require('../middleware/auth');
 const { logEvent } = require('../utils/audit');
 
 const router = express.Router();
+
+const sendResetEmail = async ({ to, token }) => {
+  const apiKey = process.env.SENDGRID_API_KEY;
+  const from = process.env.SENDGRID_FROM;
+  const frontendUrl = process.env.FRONTEND_URL || process.env.CORS_ORIGIN || '';
+
+  if (!apiKey || !from) {
+    throw new Error('SendGrid configuration missing.');
+  }
+
+  sendgrid.setApiKey(apiKey);
+
+  const resetUrl = frontendUrl ? `${frontendUrl.replace(/\/$/, '')}/reset-password/${token}` : '';
+  const message = {
+    to,
+    from,
+    subject: 'Reset your SiteTracker password',
+    text: resetUrl
+      ? `Reset your password using this link: ${resetUrl}`
+      : `Use this reset token to update your password: ${token}`,
+    html: resetUrl
+      ? `<p>Reset your password using this link:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
+      : `<p>Use this reset token to update your password:</p><p><strong>${token}</strong></p>`
+  };
+
+  await sendgrid.send(message);
+};
 
 router.post(
   '/register',
@@ -187,13 +215,7 @@ router.post(
           ip: req.ip
         });
 
-        const allowTokenResponse = process.env.RESET_PASSWORD_TOKEN_RESPONSE === 'true';
-        if (allowTokenResponse) {
-          return res.json({
-            message: 'If an account exists, a reset token has been generated.',
-            resetToken
-          });
-        }
+        await sendResetEmail({ to: user.email, token: resetToken });
       }
 
       return res.json({ message: 'If an account exists, a reset token has been generated.' });
