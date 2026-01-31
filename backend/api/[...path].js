@@ -29,14 +29,14 @@ const authLimiter = rateLimit({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/projects', auth, projectRoutes);
 app.use('/api', auth, logRoutes);
 app.use('/api', auth, folderRoutes);
-
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
 
 module.exports = async (req, res) => {
   await connectToDatabase();
