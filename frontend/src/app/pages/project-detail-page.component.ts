@@ -172,12 +172,21 @@ export class ProjectDetailPageComponent implements OnInit {
     }
 
     const formValue = this.logForm.getRawValue();
+    const dateValue =
+      formValue.date instanceof Date
+        ? formValue.date.toISOString()
+        : formValue.date
+          ? new Date(formValue.date).toISOString()
+          : '';
+
+    this.errorMessage = '';
+    this.successMessage = '';
 
     const normalizedActivity = this.normalizeActivityType(formValue.activityType || '');
 
     this.logsService
       .create(this.project._id, {
-        date: formValue.date || '',
+        date: dateValue,
         weather: { condition: formValue.weatherType || 'sunny', notes: formValue.weatherNotes || '' },
         siteArea: formValue.siteArea || '',
         activityType: normalizedActivity,
