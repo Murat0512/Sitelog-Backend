@@ -8,7 +8,7 @@ export interface DailyLog {
   project: string;
   folder?: string;
   date: string;
-  weather?: { type?: string; notes?: string };
+  weather?: { condition?: string; notes?: string };
   siteArea: string;
   activityType: string;
   summary: string;

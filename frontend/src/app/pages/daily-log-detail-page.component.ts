@@ -68,13 +68,14 @@ export class DailyLogDetailPageComponent implements OnInit {
   });
 
   readonly activityOptions = [
-    'Excavation',
-    'Rebar',
-    'Concrete Pour',
-    'Drainage',
-    'Masonry',
-    'Inspection',
-    'Delivery'
+    { label: 'Excavation', value: 'excavation' },
+    { label: 'Rebar', value: 'rebar' },
+    { label: 'Concrete Pour', value: 'concrete_pour' },
+    { label: 'Drainage', value: 'drainage' },
+    { label: 'Masonry', value: 'masonry' },
+    { label: 'Inspection', value: 'inspection' },
+    { label: 'Delivery', value: 'delivery' },
+    { label: 'Other', value: 'other' }
   ];
 
   constructor(
@@ -110,7 +111,7 @@ export class DailyLogDetailPageComponent implements OnInit {
         }
         this.editForm.patchValue({
           date: this.log?.date ? new Date(this.log.date) : null,
-          weatherType: this.log?.weather?.type || '',
+          weatherType: this.log?.weather?.condition || '',
           weatherNotes: this.log?.weather?.notes || '',
           siteArea: this.log?.siteArea || '',
           activityType: this.log?.activityType || '',
@@ -164,7 +165,7 @@ export class DailyLogDetailPageComponent implements OnInit {
     if (!this.log) return;
     this.editForm.patchValue({
       date: this.log?.date ? new Date(this.log.date) : null,
-      weatherType: this.log?.weather?.type || '',
+      weatherType: this.log?.weather?.condition || '',
       weatherNotes: this.log?.weather?.notes || '',
       siteArea: this.log?.siteArea || '',
       activityType: this.log?.activityType || '',
@@ -185,13 +186,14 @@ export class DailyLogDetailPageComponent implements OnInit {
 
     const value = this.editForm.getRawValue();
     const dateValue = value.date instanceof Date ? value.date : value.date ? new Date(value.date) : null;
+    const normalizedActivity = this.normalizeActivityType(value.activityType || '');
     this.isSaving = true;
     this.logsService
       .update(this.log._id, {
         date: dateValue ? dateValue.toISOString() : this.log.date,
-        weather: { type: value.weatherType || '', notes: value.weatherNotes || '' },
+        weather: { condition: value.weatherType || '', notes: value.weatherNotes || '' },
         siteArea: value.siteArea || '',
-        activityType: value.activityType || '',
+        activityType: normalizedActivity,
         folder: value.folder || '',
         summary: value.summary || '',
         issuesRisks: value.issuesRisks || '',
@@ -357,5 +359,12 @@ export class DailyLogDetailPageComponent implements OnInit {
     } else {
       this.router.navigate(['/projects']);
     }
+  }
+
+  private normalizeActivityType(value: string) {
+    if (!value) return '';
+    const match = this.activityOptions.find((option) => option.value === value || option.label === value);
+    if (match) return match.value;
+    return value.toLowerCase().replace(/\s+/g, '_');
   }
 }
