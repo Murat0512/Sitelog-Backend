@@ -209,7 +209,9 @@ export class ProjectDetailPageComponent implements OnInit {
           this.highlightLogId = log._id;
         },
         error: (err) => {
-          this.errorMessage = err?.error?.message || 'Unable to create log.';
+          const fallback = err?.message || `Unable to create log. Status ${err?.status || 'unknown'}.`;
+          const details = err?.error ? JSON.stringify(err.error) : '';
+          this.errorMessage = err?.error?.message || details || fallback;
         }
       });
   }
