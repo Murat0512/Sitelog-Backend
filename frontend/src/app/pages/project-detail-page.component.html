@@ -106,17 +106,11 @@
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Activity type</mat-label>
-            <input
-              matInput
-              formControlName="activityType"
-              [matAutocomplete]="activityAuto"
-              placeholder="Type or choose"
-            />
-            <mat-autocomplete #activityAuto="matAutocomplete">
+            <mat-select formControlName="activityType">
               <mat-option *ngFor="let option of activityOptions" [value]="option.value">
                 {{ option.label }}
               </mat-option>
-            </mat-autocomplete>
+            </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline">
             <mat-label>Folder (optional)</mat-label>

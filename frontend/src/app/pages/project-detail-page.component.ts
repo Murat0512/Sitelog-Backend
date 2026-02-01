@@ -69,7 +69,7 @@ export class ProjectDetailPageComponent implements OnInit {
     weatherType: ['sunny'],
     weatherNotes: [''],
     siteArea: ['', Validators.required],
-    activityType: ['', Validators.required],
+    activityType: ['inspection', Validators.required],
     folder: [''],
     summary: ['', Validators.required],
     issuesRisks: [''],
