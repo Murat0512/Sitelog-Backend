@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sitelog-frontend.vercel.app/sitemap.xml
