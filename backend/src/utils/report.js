@@ -12,6 +12,17 @@ const formatDate = (value) => {
 
 const isImage = (mimeType) => ['image/jpeg', 'image/png'].includes(mimeType);
 
+const fetchImageBuffer = async (url) => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    const arrayBuffer = await response.arrayBuffer();
+    return Buffer.from(arrayBuffer);
+  } catch (error) {
+    return null;
+  }
+};
+
 const groupAttachments = (attachments) =>
   attachments.reduce((acc, attachment) => {
     const key = attachment.dailyLog.toString();
@@ -82,12 +93,18 @@ const createProjectReport = async ({ res, project, logs, attachments }) => {
 
         const mimeType = attachment.fileType || attachment.mimeType;
         if (isImage(mimeType)) {
-          const filePath = attachment.fileUrl
-            ? path.join(uploadDir, attachment.fileUrl.replace('/uploads/', ''))
-            : path.join(uploadDir, attachment.filename || '');
-          const imagePath = filePath;
-          if (fs.existsSync(imagePath)) {
-            doc.image(imagePath, { width: 200 });
+          if (attachment.fileUrl && attachment.fileUrl.startsWith('http')) {
+            const buffer = await fetchImageBuffer(attachment.fileUrl);
+            if (buffer) {
+              doc.image(buffer, { width: 200 });
+            }
+          } else {
+            const filePath = attachment.fileUrl
+              ? path.join(uploadDir, attachment.fileUrl.replace('/uploads/', ''))
+              : path.join(uploadDir, attachment.filename || '');
+            if (fs.existsSync(filePath)) {
+              doc.image(filePath, { width: 200 });
+            }
           }
         }
         doc.moveDown(0.4);
