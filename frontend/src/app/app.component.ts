@@ -59,7 +59,7 @@ export class AppComponent {
 
   logout() {
     this.auth.logout();
-    this.router.navigateByUrl('/', { replaceUrl: true });
+    window.location.assign('/');
   }
 
   private isAuthScreen(url: string) {
