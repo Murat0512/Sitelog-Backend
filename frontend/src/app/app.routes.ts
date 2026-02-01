@@ -3,6 +3,7 @@ import { LoginPageComponent } from './pages/login-page.component';
 import { RegisterPageComponent } from './pages/register-page.component';
 import { ForgotPasswordPageComponent } from './pages/forgot-password-page.component';
 import { ResetPasswordPageComponent } from './pages/reset-password-page.component';
+import { LandingPageComponent } from './pages/landing-page.component';
 import { ProjectsPageComponent } from './pages/projects-page.component';
 import { ProjectDetailPageComponent } from './pages/project-detail-page.component';
 import { DailyLogDetailPageComponent } from './pages/daily-log-detail-page.component';
@@ -11,7 +12,7 @@ import { ProfilePageComponent } from './pages/profile-page.component';
 import { authGuard } from './core/auth.guard';
 
 export const routes: Routes = [
-	{ path: '', redirectTo: 'projects', pathMatch: 'full' },
+	{ path: '', component: LandingPageComponent },
 	{ path: 'login', component: LoginPageComponent },
 	{ path: 'register', component: RegisterPageComponent },
 	{ path: 'forgot-password', component: ForgotPasswordPageComponent },

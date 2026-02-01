@@ -63,7 +63,13 @@ export class AppComponent {
   }
 
   private isAuthScreen(url: string) {
-    return url.startsWith('/login') || url.startsWith('/register');
+    return (
+      url === '/' ||
+      url.startsWith('/login') ||
+      url.startsWith('/register') ||
+      url.startsWith('/forgot-password') ||
+      url.startsWith('/reset-password')
+    );
   }
 
   private isWideScreen(url: string) {
