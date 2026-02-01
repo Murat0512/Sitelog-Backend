@@ -10,6 +10,12 @@ const formatDate = (value) => {
   return date.toISOString().split('T')[0];
 };
 
+const formatDateTime = (value) => {
+  if (!value) return '';
+  const date = new Date(value);
+  return `${date.toISOString().split('T')[0]} ${date.toISOString().split('T')[1].slice(0, 5)}`;
+};
+
 const isImage = (mimeType) => ['image/jpeg', 'image/png'].includes(mimeType);
 
 const fetchImageBuffer = async (url) => {
@@ -106,6 +112,18 @@ const createProjectReport = async ({ res, project, logs, attachments }) => {
               doc.image(filePath, { width: 200 });
             }
           }
+        }
+        if (attachment.comments?.length) {
+          doc.moveDown(0.2);
+          doc.fontSize(8).fillColor('#475569').text('Comments:');
+          attachment.comments.forEach((comment) => {
+            const author = comment.authorName || 'User';
+            const timestamp = formatDateTime(comment.createdAt);
+            doc
+              .fontSize(8)
+              .fillColor('#475569')
+              .text(`- ${author}${timestamp ? ` (${timestamp})` : ''}: ${comment.text}`);
+          });
         }
         doc.moveDown(0.4);
       }
