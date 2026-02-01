@@ -86,13 +86,14 @@ export class ProjectDetailPageComponent implements OnInit {
   });
 
   readonly activityOptions = [
-    'Excavation',
-    'Rebar',
-    'Concrete Pour',
-    'Drainage',
-    'Masonry',
-    'Inspection',
-    'Delivery'
+    { label: 'Excavation', value: 'excavation' },
+    { label: 'Rebar', value: 'rebar' },
+    { label: 'Concrete Pour', value: 'concrete_pour' },
+    { label: 'Drainage', value: 'drainage' },
+    { label: 'Masonry', value: 'masonry' },
+    { label: 'Inspection', value: 'inspection' },
+    { label: 'Delivery', value: 'delivery' },
+    { label: 'Other', value: 'other' }
   ];
 
   constructor(
@@ -172,12 +173,14 @@ export class ProjectDetailPageComponent implements OnInit {
 
     const formValue = this.logForm.getRawValue();
 
+    const normalizedActivity = this.normalizeActivityType(formValue.activityType || '');
+
     this.logsService
       .create(this.project._id, {
         date: formValue.date || '',
-        weather: { type: formValue.weatherType || 'sunny', notes: formValue.weatherNotes || '' },
+        weather: { condition: formValue.weatherType || 'sunny', notes: formValue.weatherNotes || '' },
         siteArea: formValue.siteArea || '',
-        activityType: formValue.activityType || '',
+        activityType: normalizedActivity,
         folder: formValue.folder || undefined,
         summary: formValue.summary || '',
         issuesRisks: formValue.issuesRisks || '',
@@ -257,6 +260,13 @@ export class ProjectDetailPageComponent implements OnInit {
 
   attachmentsFor(logId: string) {
     return this.attachments.filter((attachment) => attachment.dailyLog === logId);
+  }
+
+  private normalizeActivityType(value: string) {
+    if (!value) return '';
+    const match = this.activityOptions.find((option) => option.value === value || option.label === value);
+    if (match) return match.value;
+    return value.toLowerCase().replace(/\s+/g, '_');
   }
 
   loadFolders(projectId: string) {
