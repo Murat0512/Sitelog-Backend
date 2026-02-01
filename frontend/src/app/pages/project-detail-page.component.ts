@@ -165,6 +165,7 @@ export class ProjectDetailPageComponent implements OnInit {
   }
 
   createLog() {
+    alert('Create log triggered');
     if (!this.project) return;
     if (this.logForm.invalid) {
       this.errorMessage = 'Please fill required fields (date, site area, activity type, summary).';

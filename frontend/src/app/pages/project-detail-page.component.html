@@ -133,7 +133,7 @@
             <mat-label>Next steps</mat-label>
             <textarea matInput rows="2" formControlName="nextSteps"></textarea>
           </mat-form-field>
-          <button mat-raised-button color="primary" type="submit">Add Log</button>
+          <button mat-raised-button color="primary" type="submit" (click)="createLog()">Add Log</button>
           <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
         </form>
       </mat-card-content>
