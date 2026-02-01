@@ -174,11 +174,12 @@ export class ProjectDetailPageComponent implements OnInit {
     }
 
     const formValue = this.logForm.getRawValue();
+    const dateRaw = this.logForm.get('date')?.value as unknown;
     const dateValue =
-      formValue.date instanceof Date
-        ? formValue.date.toISOString()
-        : formValue.date
-          ? new Date(formValue.date).toISOString()
+      dateRaw instanceof Date
+        ? dateRaw.toISOString()
+        : dateRaw
+          ? new Date(dateRaw as string).toISOString()
           : '';
 
     this.errorMessage = '';
