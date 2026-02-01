@@ -162,6 +162,7 @@ export class ProjectDetailPageComponent implements OnInit {
 
   resetFilters() {
     this.filterForm.reset({ startDate: '', endDate: '', activityType: '', folder: '' });
+    this.logForm.patchValue({ folder: '' });
     if (this.project) {
       this.loadLogs(this.project._id);
     }
@@ -327,6 +328,8 @@ export class ProjectDetailPageComponent implements OnInit {
 
   selectFolder(folderId: string) {
     this.logForm.patchValue({ folder: folderId });
+    this.filterForm.patchValue({ folder: folderId });
+    this.applyFilters();
   }
 
   deleteFolder(folder: LogFolder, event?: Event) {
