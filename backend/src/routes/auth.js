@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
@@ -10,16 +11,16 @@ const { logEvent } = require('../utils/audit');
 const router = express.Router();
 
 const sendResetEmail = async ({ to, token }) => {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM || process.env.MAIL_FROM;
+  const smtpHost = process.env.BREVO_SMTP_HOST || 'smtp-relay.brevo.com';
+  const smtpPort = Number(process.env.BREVO_SMTP_PORT || 587);
+  const smtpUser = process.env.BREVO_SMTP_USER;
+  const smtpPass = process.env.BREVO_SMTP_PASS;
+  const from = process.env.MAIL_FROM;
   const frontendUrl = process.env.FRONTEND_URL || process.env.CORS_ORIGIN || '';
 
-  if (!apiKey || !from) {
-    throw new Error('Resend configuration missing.');
+  if (!smtpUser || !smtpPass || !from) {
+    throw new Error('Brevo SMTP configuration missing.');
   }
-
-  const { Resend } = await import('resend');
-  const resend = new Resend(apiKey);
 
   const resetUrl = frontendUrl ? `${frontendUrl.replace(/\/$/, '')}/reset-password/${token}` : '';
   const subject = 'Reset your SiteTracker password';
@@ -30,7 +31,17 @@ const sendResetEmail = async ({ to, token }) => {
     ? `<p>Reset your password using this link:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`
     : `<p>Use this reset token to update your password:</p><p><strong>${token}</strong></p>`;
 
-  await resend.emails.send({ to, from, subject, text, html });
+  const transporter = nodemailer.createTransport({
+    host: smtpHost,
+    port: smtpPort,
+    secure: smtpPort === 465,
+    auth: {
+      user: smtpUser,
+      pass: smtpPass
+    }
+  });
+
+  await transporter.sendMail({ to, from, subject, text, html });
 };
 
 router.post(

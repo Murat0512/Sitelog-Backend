@@ -19,8 +19,11 @@
   - `CLOUDINARY_API_KEY`
   - `CLOUDINARY_API_SECRET`
   - Optional: `CORS_ORIGIN`
-  - `RESEND_API_KEY`
-  - `RESEND_FROM` (or `MAIL_FROM`)
+  - `BREVO_SMTP_HOST` (default: `smtp-relay.brevo.com`)
+  - `BREVO_SMTP_PORT` (default: `587`)
+  - `BREVO_SMTP_USER`
+  - `BREVO_SMTP_PASS`
+  - `MAIL_FROM`
   - `FRONTEND_URL`
 - [ ] Deploy
 - [ ] Test:
