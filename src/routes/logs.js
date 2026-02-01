@@ -9,6 +9,23 @@ const { logEvent } = require('../utils/audit');
 
 const isAdmin = (req) => req.user?.role === 'admin';
 
+const activityTypes = [
+  'excavation',
+  'rebar',
+  'concrete_pour',
+  'drainage',
+  'masonry',
+  'inspection',
+  'delivery',
+  'other'
+];
+
+const normalizeActivityType = (value) => {
+  if (!value) return value;
+  const normalized = String(value).toLowerCase().replace(/\s+/g, '_');
+  return activityTypes.includes(normalized) ? normalized : 'other';
+};
+
 const ensureProjectAccess = async (req, res, projectId) => {
   const project = await Project.findById(projectId);
   if (!project) {
@@ -110,7 +127,7 @@ router.post('/projects/:projectId/logs', async (req, res) => {
       date,
       weather: normalizedWeather,
       siteArea,
-      activityType,
+      activityType: normalizeActivityType(activityType),
       summary,
       issuesRisks,
       nextSteps,
@@ -207,6 +224,13 @@ router.get('/logs/:id/attachments', async (req, res) => {
 router.put('/logs/:id', async (req, res) => {
   try {
     const updates = req.body;
+    if (updates?.activityType) {
+      updates.activityType = normalizeActivityType(updates.activityType);
+    }
+    if (updates?.weather?.type && !updates?.weather?.condition) {
+      updates.weather.condition = updates.weather.type;
+      delete updates.weather.type;
+    }
     const existing = await DailyLog.findById(req.params.id);
     if (!existing) {
       return res.status(404).json({ message: 'Daily log not found.' });
@@ -226,6 +250,13 @@ router.put('/logs/:id', async (req, res) => {
 router.patch('/logs/:id', async (req, res) => {
   try {
     const updates = req.body;
+    if (updates?.activityType) {
+      updates.activityType = normalizeActivityType(updates.activityType);
+    }
+    if (updates?.weather?.type && !updates?.weather?.condition) {
+      updates.weather.condition = updates.weather.type;
+      delete updates.weather.type;
+    }
     const existing = await DailyLog.findById(req.params.id);
     if (!existing) {
       return res.status(404).json({ message: 'Daily log not found.' });
