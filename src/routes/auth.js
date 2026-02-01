@@ -1,7 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const { Resend } = require('resend');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
@@ -19,6 +18,7 @@ const sendResetEmail = async ({ to, token }) => {
     throw new Error('Resend configuration missing.');
   }
 
+  const { Resend } = await import('resend');
   const resend = new Resend(apiKey);
 
   const resetUrl = frontendUrl ? `${frontendUrl.replace(/\/$/, '')}/reset-password/${token}` : '';
