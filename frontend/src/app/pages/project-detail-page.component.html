@@ -267,9 +267,14 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <button mat-raised-button color="primary" type="button" (click)="applyFilters()">
-            Apply Filters
-          </button>
+          <div class="filter-actions">
+            <button mat-raised-button color="primary" type="button" (click)="applyFilters()">
+              Apply Filters
+            </button>
+            <button mat-stroked-button color="primary" type="button" (click)="resetFilters()">
+              Reset
+            </button>
+          </div>
         </form>
       </mat-card-content>
     </mat-card>

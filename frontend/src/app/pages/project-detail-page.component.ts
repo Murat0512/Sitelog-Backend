@@ -160,6 +160,13 @@ export class ProjectDetailPageComponent implements OnInit {
     this.loadLogs(this.project._id);
   }
 
+  resetFilters() {
+    this.filterForm.reset({ startDate: '', endDate: '', activityType: '', folder: '' });
+    if (this.project) {
+      this.loadLogs(this.project._id);
+    }
+  }
+
   goBack() {
     this.router.navigate(['/projects']);
   }

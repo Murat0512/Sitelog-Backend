@@ -160,6 +160,12 @@
   gap: 12px;
 }
 
+.filter-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .hint {
   margin: 6px 0 12px;
   padding: 10px 12px;
