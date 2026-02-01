@@ -167,6 +167,7 @@ export class ProjectDetailPageComponent implements OnInit {
   createLog() {
     if (!this.project) return;
     if (this.logForm.invalid) {
+      this.errorMessage = 'Please fill required fields (date, site area, activity type, summary).';
       this.logForm.markAllAsTouched();
       return;
     }
@@ -183,6 +184,11 @@ export class ProjectDetailPageComponent implements OnInit {
     this.successMessage = '';
 
     const normalizedActivity = this.normalizeActivityType(formValue.activityType || '');
+
+    if (!dateValue || !normalizedActivity) {
+      this.errorMessage = 'Please select a valid date and activity type.';
+      return;
+    }
 
     this.logsService
       .create(this.project._id, {
