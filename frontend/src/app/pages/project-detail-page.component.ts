@@ -212,6 +212,9 @@ export class ProjectDetailPageComponent implements OnInit {
           const fallback = err?.message || `Unable to create log. Status ${err?.status || 'unknown'}.`;
           const details = err?.error ? JSON.stringify(err.error) : '';
           this.errorMessage = err?.error?.message || details || fallback;
+          if (this.errorMessage) {
+            alert(this.errorMessage);
+          }
         }
       });
   }
