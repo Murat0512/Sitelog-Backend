@@ -12,6 +12,8 @@ const { connectToDatabase } = require('./_lib/db');
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 const corsOrigin = process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:4200';
 app.use(cors({ origin: corsOrigin }));
 app.use(

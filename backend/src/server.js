@@ -12,6 +12,8 @@ const folderRoutes = require('./routes/folders');
 const auth = require('./middleware/auth');
 
 const app = express();
+
+app.set('trust proxy', 1);
 // Deployment marker: server.js updated
 
 const corsOrigin = process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:4200';
